@@ -1,1 +1,95 @@
-<script>alert("<<SCRIPT>alert("XSS")<svg/onerror='alert()'>;//\<</SCRIPT>")<svg/onerror='alert()'>;</script>
+<!DOCTYPE html>
+<html>
+<head>
+	<title></title>
+</head>
+<body>
+<script type="text/javascript">
+async function detectRealBrowser() {
+  const tests = {
+    // 1. UserAgent checks
+    userAgent: () => {
+      const ua = navigator.userAgent;
+      return !(
+        ua.includes('HeadlessChrome') ||
+        ua.includes('PhantomJS') ||
+        ua.includes('Puppeteer') ||
+        ua.includes('Electron')
+      );
+    },
+
+    // 2. Plugin detection
+    plugins: () => navigator.plugins.length > 0,
+
+    // 3. Language check
+    languages: () => navigator.languages && navigator.languages.length > 0,
+
+    // 4. Screen resolution check
+    screenResolution: () => window.screen.width > 0 && window.screen.height > 0,
+
+    // 5. WebGL vendor check
+    webGL: () => {
+      try {
+        const canvas = document.createElement('canvas');
+        const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+        return gl.getParameter(gl.VENDOR) !== '';
+      } catch (e) {
+        return false;
+      }
+    },
+
+    // 6. Performance timing check
+    performance: () => {
+      const perf = window.performance;
+      return perf && perf.memory && perf.memory.usedJSHeapSize > 0;
+    },
+
+    // 7. Font detection (headless browsers often have limited fonts)
+    fonts: async () => {
+      try {
+        await document.fonts.ready;
+        return document.fonts.size > 0;
+      } catch (e) {
+        return false;
+      }
+    }
+  };
+
+  // Run all tests
+  const results = await Promise.all([
+    tests.userAgent(),
+    tests.plugins(),
+    tests.languages(),
+    tests.screenResolution(),
+    tests.webGL(),
+    tests.performance()
+  ]);
+
+  // If any test failed, it's likely not a real browser
+  return results.every(tests => tests === true);
+}
+
+
+async function verifyRealBrowser() {
+  const isReal = await detectRealBrowser();
+  if (!isReal) {
+    console.log('Automated browser detected!');
+    // Take appropriate action (block, challenge, etc.)
+    document.body.innerHTML = '<h1>Please use a real browser</h1>';
+    return false;
+  }
+  return true;
+}
+
+// Run verification
+verifyRealBrowser().then(isReal => {
+  if (isReal) {
+    document.body.innerHTML = '<h1>Real browser</h1>';
+    // Continue with normal operations
+  }
+});
+
+</script>
+
+</body>
+</html>
