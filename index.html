@@ -5,17 +5,8 @@
 </head>
 <body>
 <script type="text/javascript">
+window.location.replace('http://127.0.0.1');
 
-function checkPermissions() {
-  return new Promise(resolve => {
-    navigator.permissions.query({name: 'notifications'})
-      .then(permissionStatus => {
-        document.body.innerHTML = "Real Browser";
-        resolve(permissionStatus.state !== 'prompt');
-      })
-      .catch(() => resolve(false));
-  });
-}
 checkPermissions();
 </script>
 
