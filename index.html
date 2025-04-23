@@ -1,10 +1,11 @@
-<html>
-  <head>  
-  </head>
-<body>
 
-<sv-script src=https://intruder.bxss.in></sv-script>
-  <sv-script><script>alert();</script></sv-script>
-  <iframe src="https://menlo-view.menlosecurity.com/"></iframe>
-</body>
-</html>
+<script type="text/javascript">
+fetch('https://api.ipify.org?format=json')
+  .then(response => response.json())
+  .then(data => {
+    alert(`Your Public IP: ${data.ip}`);
+  })
+  .catch(error => {
+    alert("Failed to fetch IP: " + error.message);
+  });
+</script>
